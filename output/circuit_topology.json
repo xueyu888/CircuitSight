@@ -1,0 +1,271 @@
+{
+  "reference_image": "reference.png",
+  "circuits": [
+    {
+      "name": "Panel 1 - Surge protection with indicator and arrestor",
+      "nodes": [
+        {
+          "id": "bus",
+          "label": "Incoming line"
+        },
+        {
+          "id": "ground",
+          "label": "Ground"
+        }
+      ],
+      "components": [
+        {
+          "id": "LP1",
+          "type": "indicator_lamp",
+          "connections": [
+            "bus",
+            "ground"
+          ],
+          "note": "Lamp with one side tied to the line and the other to ground"
+        },
+        {
+          "id": "D1",
+          "type": "surge_diode",
+          "connections": [
+            "bus",
+            "ground"
+          ],
+          "note": "Diode symbol to ground, interpreted as a discharge path"
+        },
+        {
+          "id": "SPD1",
+          "type": "surge_module",
+          "connections": [
+            "bus",
+            "ground"
+          ],
+          "note": "Box with a downward triangle, treated as a surge protection cartridge"
+        }
+      ],
+      "layout": {
+        "bus": [
+          0.0,
+          1.0
+        ],
+        "ground": [
+          0.0,
+          -1.0
+        ]
+      }
+    },
+    {
+      "name": "Panel 2 - Lamp with single discharge diode",
+      "nodes": [
+        {
+          "id": "bus",
+          "label": "Incoming line"
+        },
+        {
+          "id": "ground",
+          "label": "Ground"
+        }
+      ],
+      "components": [
+        {
+          "id": "LP1",
+          "type": "indicator_lamp",
+          "connections": [
+            "bus",
+            "ground"
+          ],
+          "note": "Lamp monitoring the line"
+        },
+        {
+          "id": "D1",
+          "type": "surge_diode",
+          "connections": [
+            "bus",
+            "ground"
+          ],
+          "note": "Single line-to-ground discharge diode"
+        }
+      ],
+      "layout": {
+        "bus": [
+          0.0,
+          1.0
+        ],
+        "ground": [
+          0.0,
+          -1.0
+        ]
+      }
+    },
+    {
+      "name": "Panel 3 - Lamp with earth switch and discharge diode",
+      "nodes": [
+        {
+          "id": "bus",
+          "label": "Incoming line"
+        },
+        {
+          "id": "ground",
+          "label": "Ground"
+        },
+        {
+          "id": "earth_switch",
+          "label": "Earth switch contact"
+        }
+      ],
+      "components": [
+        {
+          "id": "S1",
+          "type": "earth_switch",
+          "connections": [
+            "bus",
+            "earth_switch"
+          ],
+          "note": "Open earthing switch tied to ground"
+        },
+        {
+          "id": "LP1",
+          "type": "indicator_lamp",
+          "connections": [
+            "bus",
+            "ground"
+          ],
+          "note": "Lamp connected from the line to ground"
+        },
+        {
+          "id": "D1",
+          "type": "surge_diode",
+          "connections": [
+            "bus",
+            "ground"
+          ],
+          "note": "Line-to-ground discharge diode"
+        }
+      ],
+      "layout": {
+        "bus": [
+          0.0,
+          1.0
+        ],
+        "ground": [
+          0.5,
+          -1.0
+        ],
+        "earth_switch": [
+          -0.5,
+          -1.0
+        ]
+      }
+    },
+    {
+      "name": "Panel 4 - Measurement loop with diode and disconnect",
+      "nodes": [
+        {
+          "id": "bus",
+          "label": "Incoming line"
+        },
+        {
+          "id": "ground",
+          "label": "Ground"
+        },
+        {
+          "id": "loop_after_diode",
+          "label": "After diode"
+        },
+        {
+          "id": "loop_after_link",
+          "label": "After disconnect link"
+        },
+        {
+          "id": "loop_after_v1",
+          "label": "After voltmeter V1"
+        },
+        {
+          "id": "loop_after_v2",
+          "label": "After voltmeter V2"
+        }
+      ],
+      "components": [
+        {
+          "id": "LP1",
+          "type": "indicator_lamp",
+          "connections": [
+            "bus",
+            "ground"
+          ],
+          "note": "Lamp with one side tied to ground"
+        },
+        {
+          "id": "D1",
+          "type": "diode",
+          "connections": [
+            "bus",
+            "loop_after_diode"
+          ],
+          "note": "Diode feeding the measurement loop"
+        },
+        {
+          "id": "X1",
+          "type": "disconnect_link",
+          "connections": [
+            "loop_after_diode",
+            "loop_after_link"
+          ],
+          "note": "Circle with slash interpreted as a removable link"
+        },
+        {
+          "id": "V1",
+          "type": "voltmeter",
+          "connections": [
+            "loop_after_link",
+            "loop_after_v1"
+          ],
+          "note": "Upper voltmeter in the loop"
+        },
+        {
+          "id": "V2",
+          "type": "voltmeter",
+          "connections": [
+            "loop_after_v1",
+            "loop_after_v2"
+          ],
+          "note": "Lower voltmeter in the loop"
+        },
+        {
+          "id": "R1",
+          "type": "resistor",
+          "connections": [
+            "loop_after_v2",
+            "bus"
+          ],
+          "note": "Rectangular element interpreted as a series resistor closing the loop"
+        }
+      ],
+      "layout": {
+        "bus": [
+          0.0,
+          1.0
+        ],
+        "ground": [
+          -0.8,
+          -0.8
+        ],
+        "loop_after_diode": [
+          0.0,
+          0.2
+        ],
+        "loop_after_link": [
+          0.5,
+          0.0
+        ],
+        "loop_after_v1": [
+          0.5,
+          -0.4
+        ],
+        "loop_after_v2": [
+          0.2,
+          -0.6
+        ]
+      }
+    }
+  ]
+}
