@@ -22,3 +22,10 @@ sw
 Transformer
 Reactor
 3W_Transformer
+cabinet
+indicator_lamp
+capacitor_fixed
+earth
+fuse_indicator
+Arrester
+Earth_Switch
