@@ -1,0 +1,7 @@
+data/ck_data/tiles/images/val/F13121S-D0901(1)-03-模型_x10476_y2948.png
+data/ck_data/tiles/images/val/F13121S-D0901(1)-03-模型_x12016_y2948.png
+data/ck_data/tiles/images/val/F13121S-D0901(1)-03-模型_x2048_y2948.png
+data/ck_data/tiles/images/val/F13121S-D0901(1)-03-模型_x4096_y2948.png
+data/ck_data/tiles/images/val/F13121S-D0901(1)-03-模型_x5856_y2948.png
+data/ck_data/tiles/images/val/F13121S-D0901(1)-03-模型_x7392_y2948.png
+data/ck_data/tiles/images/val/F13121S-D0901(1)-03-模型_x8932_y2948.png
