@@ -1,0 +1,6 @@
+# 只训猫狗，且仅加载“有标签”的图片清单
+train: /home/xue/datasets/coco2017/train_dogcat.txt
+val:   /home/xue/datasets/coco2017/val_dogcat.txt
+names:
+  0: cat
+  1: dog
