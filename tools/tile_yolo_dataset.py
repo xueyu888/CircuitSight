@@ -3,7 +3,7 @@
 # 功能：
 #  - 支持传入任意数量的图片文件，或若干包含图片的文件夹
 #  - 自动按 YOLO 标签推断 labels（同目录 .txt 或 images→labels 平行目录）
-#  - 切 tile（无重叠，切线避开目标），每张原图可抽若干 tile 进验证集
+#  - 切 tile（无重叠，切线完全避开任何目标框），每张原图可抽若干 tile 进验证集
 #  - 生成 Train.txt / Val.txt 和 dataset.yaml
 
 from __future__ import annotations
@@ -20,7 +20,7 @@ ImageFile.LOAD_TRUNCATED_IMAGES = True
 
 # ========== 默认参数（可被 CLI 覆盖） ==========
 DEFAULT_TILE = 2048
-DEFAULT_EDGE_MARGIN = 2
+DEFAULT_EDGE_MARGIN = 2          # 现在只在极少数地方保留，不再用于“可以压进框内”的逻辑
 DEFAULT_SEARCH_BACK_STEP = 4
 DEFAULT_MIN_SEG = 64
 
@@ -147,11 +147,15 @@ def merge_intervals(intervals: List[Tuple[float, float]]):
 
 
 def forbidden_intervals_1d(boxes_on_axis, edge: int, L: int):
-    # 对每个框，禁止切线落在 (b1+edge, b2-edge)
+    """
+    修改点 1：
+    原来是禁止切线落在 (b1+edge, b2-edge)，允许线压进目标框 edge 像素。
+    现在改成：只要是有标注的框，[b1, b2] 整段都视为禁止切线区域。
+    """
     ints = []
     for (b1, b2) in boxes_on_axis:
-        s = max(0, b1 + edge)
-        e = min(L, b2 - edge)
+        s = max(0, b1)   # 从框左边界开始
+        e = min(L, b2)   # 到框右边界结束
         if e > s:
             ints.append((s, e))
     return merge_intervals(ints)
@@ -165,9 +169,14 @@ def adjust_to_allowed(x: float, forb):
 
 
 def plan_axis_cuts(L: int, boxes_on_axis, tile: int, edge: int, back_step: int, min_seg: int):
-    # 快速不可行性：若有框尺寸 > tile-2*edge，必然无解
+    """
+    修改点 2：
+    不再允许“tile 尺寸 - 2*edge”那种逻辑，因为现在切线完全不能进框。
+    只要有框尺寸 > tile，就直接无解。
+    """
+    # 快速不可行性：若有框尺寸 > tile，必然无解（否则一定要切穿它）
     for (b1, b2) in boxes_on_axis:
-        if (b2 - b1) > tile - 2*edge:
+        if (b2 - b1) > tile:
             return None
 
     forb = forbidden_intervals_1d(boxes_on_axis, edge, L)
@@ -182,7 +191,8 @@ def plan_axis_cuts(L: int, boxes_on_axis, tile: int, edge: int, back_step: int, 
         if target > L:
             target = L
 
-        e = adjust_to_allowed(target, forb)  # 向右挪到允许区间
+        # 向右挪到允许区间
+        e = adjust_to_allowed(target, forb)
         if e - s <= tile and e - s >= min_seg and e <= L:
             cuts.append(float(e))
             continue
@@ -321,8 +331,12 @@ def process_images(
 
                 tile_labels = []
                 for (cls, bx1, by1, bx2, by2) in boxes:
-                    if (bx1 >= x1 + edge and by1 >= y1 + edge and
-                        bx2 <= x2 - edge and by2 <= y2 - edge):
+                    # 修改点 3：
+                    # 原逻辑要求：框在 tile 内，且离 tile 边缘至少 edge 像素
+                    # 现在我们只要求“完全落在该 tile 内”，不再做第二次 edge 过滤，
+                    # 因为切线本身已经保证不会穿过这个框。
+                    if (bx1 >= x1 and by1 >= y1 and
+                        bx2 <= x2 and by2 <= y2):
                         lx1 = bx1 - x1; ly1 = by1 - y1
                         lx2 = bx2 - x1; ly2 = by2 - y1
                         tile_labels.append(xyxy_to_yolo(cls, lx1, ly1, lx2, ly2, w_tile, h_tile))
@@ -381,7 +395,7 @@ def process_images(
 
     write_dataset_yaml(dataset_root, train_list, val_list, num_classes + 1)
 
-    print("\nTiling done (NO OVERLAP, cutline planning).")
+    print("\nTiling done (NO OVERLAP, cutline planning; no box is ever cut).")
     print(f"Train tiles: {len(train_imgs_written)}  |  Val tiles: {len(val_imgs_written)}")
     print(f"Wrote: {train_list}")
     print(f"Wrote: {val_list}")
@@ -405,7 +419,8 @@ def build_argparser():
                     help=f"Train.txt/Val.txt/dataset.yaml 输出位置（默认: {DEFAULT_DATASET_ROOT}）")
 
     ap.add_argument("--tile", type=int, default=DEFAULT_TILE)
-    ap.add_argument("--edge", type=int, default=DEFAULT_EDGE_MARGIN)
+    ap.add_argument("--edge", type=int, default=DEFAULT_EDGE_MARGIN,
+                    help="边缘安全距离（当前只影响切线搜索的一些限制，不再允许压进目标框内部）")
     ap.add_argument("--back-step", type=int, default=DEFAULT_SEARCH_BACK_STEP)
     ap.add_argument("--min-seg", type=int, default=DEFAULT_MIN_SEG)
 
