@@ -3,14 +3,11 @@ from typing import List, Optional
 
 class MatchResult(BaseModel):
     label: str
-    
-    # === 核心指标拆解 ===
-    final_score: float    # 最终混合得分 (用于排序, 0-100)
-    vector_dist: float    # 嵌入模型给出的 L2 距离 (粗排结果)
-    structure_score: float # 匹配算法给出的相似度 (精排结果, 0-100)
-    
+    distance: float
+    score: float
     trusted: bool
-    heatmap: Optional[str] = None 
+    # 新增：用于存放该匹配项的对比图
+    viz_base64: Optional[str] = None 
 
 class RecognitionResult(BaseModel):
     filename: str
