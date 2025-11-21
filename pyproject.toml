@@ -1,0 +1,65 @@
+[project]
+name = "circuitsight"
+version = "0.1.0"
+description = "Circuit Diagram Recognition System"
+authors = [
+    {name = "xueyu", email = "xueuy@qq.com"}
+]
+readme = "README.md"
+requires-python = ">=3.12"
+
+# 这里列出所有的通用依赖
+dependencies = [
+    # === 原有依赖 ===
+    "pillow (>=11.0.0)",  # 放宽了一点限制以防冲突
+    "typer[all] (>=0.12.0)",
+    "numpy (>=1.26.0)",   # 建议放宽到 1.26+，因为某些旧库可能还不完全支持 numpy 2.0
+    "ultralytics (>=8.3.0)",
+    "pycocotools (>=2.0.7)",
+    "opencv-python (>=4.10.0)",
+    "opencv-contrib-python (>=4.10.0)",
+    "opencv-python-headless (>=4.10.0)",
+    "scikit-image (>=0.24.0)",
+    "pyyaml (>=6.0)",
+    "faiss-cpu (>=1.7.4)",
+    "matplotlib (>=3.8.0)",
+    "scikit-learn (>=1.5.0)",
+    "umap-learn (>=0.5.0)",
+    "fastapi (>=0.100.0)",
+    "uvicorn (>=0.20.0)",
+    
+    # === 新增依赖 (适配 ConvNeXt 和 新架构) ===
+    "timm (>=1.0.0)",                # 核心：用于加载 ConvNeXt
+    "python-multipart (>=0.0.9)",    # 核心：FastAPI 上传文件支持
+    "pydantic-settings (>=2.0.0)",   # 核心：配置管理
+    "httpx (>=0.27.0)",              # 测试：用于运行 test_client.py
+    
+    # PyTorch 相关 (实际版本由 tool.poetry.dependencies 控制源)
+    "torch (>=2.4.0)",    # 修改：2.9.0 不存在，改为 >=2.4.0
+    "torchvision (>=0.19.0)",
+    "torchaudio (>=2.4.0)"
+]
+
+[tool.poetry]
+packages = [{include = "app"}]
+
+# 针对特定源或 git 依赖的详细配置
+[tool.poetry.dependencies]
+python = ">=3.12,<3.15"
+
+# CLIP 从 git 安装
+clip = {git = "https://github.com/openai/CLIP.git"}
+
+# PyTorch 使用 CUDA 12.6 源
+torch = {version = ">=2.4.0", source = "pytorch-cu126"}
+torchvision = {version = ">=0.19.0", source = "pytorch-cu126"}
+torchaudio = {version = ">=2.4.0", source = "pytorch-cu126"}
+
+[[tool.poetry.source]]
+name = "pytorch-cu126"
+url = "https://download.pytorch.org/whl/cu126"
+priority = "explicit"  # 建议改为 explicit，强制 torch 相关包只从这里下
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"

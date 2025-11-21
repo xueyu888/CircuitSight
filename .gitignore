@@ -1,1 +1,5 @@
-output/*.png
+data/debug
+test
+__pycache__
+output
+runs

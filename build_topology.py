@@ -2,6 +2,7 @@ import argparse
 import base64
 import io
 import json
+import textwrap
 from pathlib import Path
 
 import matplotlib.pyplot as plt
@@ -220,8 +221,9 @@ def main():
 
     png_bytes = render_topology_figure(circuits)
     b64_payload = base64.b64encode(png_bytes).decode("ascii")
+    wrapped_payload = "\n".join(textwrap.wrap(b64_payload, width=76))
     text_path = output_dir / "circuit_topology.txt"
-    text_path.write_text(b64_payload, encoding="utf-8")
+    text_path.write_text(wrapped_payload, encoding="utf-8")
 
     print(f"Wrote {json_path}")
     print(f"Wrote {text_path} (Base64-encoded PNG)")

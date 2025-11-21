@@ -32,3 +32,26 @@ base64 -d output/circuit_topology.txt > output/circuit_topology.png
 # or generate it directly
 python build_topology.py --emit-png
 ```
+
+
+poetry train yolo detect train \ data=datasets/cabinets/cabinets.yaml \ model=yolov8n.pt imgsz=1280 epochs=100 batch=16 \ optimizer=sgd cos_lr=True \ amp=True workers=8
+
+poetry run yolo detect train \
+  data=data/yolo/dataset.yaml model=yolov8s.pt \
+  imgsz=1536 epochs=150 batch=6 workers=8 \
+  mosaic=0.5 close_mosaic=15 perspective=0.0 shear=0.0 \
+  cos_lr=True amp=True
+poetry run yolo detect train \
+  data=data/yolo/dataset.yaml model=yolov8s.pt \
+  imgsz=1536 epochs=150 batch=6 workers=8 \
+  mosaic=0.5 close_mosaic=15 perspective=0.0 shear=0.0 \
+  cos_lr=True amp=True
+
+
+poetry run yolo detect train \
+  data=data/yolo/dataset.yaml model=yolov8s.pt \
+  imgsz=1536 epochs=150 batch=6 workers=8 \
+  mosaic=0.2 close_mosaic=15 perspective=0.0 shear=0.0 \
+  cos_lr=True amp=True
+
+  
