@@ -3,3 +3,5 @@ test
 __pycache__
 output
 runs
+yolov*
+yolo11*
