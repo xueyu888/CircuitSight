@@ -6,7 +6,16 @@ class MatchResult(BaseModel):
     distance: float
     score: float
     trusted: bool
-    # 新增：用于存放该匹配项的对比图
+    
+    # === 统计字段 ===
+    match_count: int = 0      # RANSAC 内点数
+    kp_query_total: int = 0
+    kp_ref_total: int = 0
+    
+    # === 新增：网格统计 ===
+    grid_matched: int = 0     # 匹配的格子数 (分子)
+    grid_total: int = 0       # 总活跃格子数 (分母, Max值)
+    
     viz_base64: Optional[str] = None 
 
 class RecognitionResult(BaseModel):
